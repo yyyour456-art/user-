@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title id="dynamic-page-title">NexChat Pro</title>
+  <!-- Dynamic Favicon for App Disguise Mode -->
+  <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="" />
+  <!-- RemixIcons CDN for Crisp Vector Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-instagram">
+
+  <!-- ========================================================================
+       1. AUTH / LOGIN SCREEN (#auth-screen)
+       ======================================================================== -->
+  <section id="auth-screen" class="auth-wrapper">
+    <div class="auth-card glass-panel">
+      <!-- Dynamic Brand Header -->
+      <div class="auth-brand">
+        <img src="" alt="App Logo" class="app-logo-img dynamic-app-logo" />
+        <h1 class="dynamic-app-name">NexChat Pro</h1>
+        <p class="auth-subtitle">Instagram DM • WhatsApp • Telegram Hybrid E2EE Messenger</p>
+      </div>
+
+      <!-- Anti-Brute Force Lockout Box (Hidden by default, shown after 3 wrong tries) -->
+      <div id="lockout-box" class="lockout-banner hidden">
+        <div class="lockout-icon"><i class="ri-shield-keyhole-fill"></i></div>
+        <div class="lockout-info">
+          <h4>Anti-Brute Force Lock Active</h4>
+          <p>Too many failed password attempts. Inputs locked for security.</p>
+          <div class="lockout-timer-pill">
+            <i class="ri-timer-flash-line"></i> Unlocking in: <span id="lockout-timer">05:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login / Auto-Register Form -->
+      <form id="auth-form" class="auth-form" autocomplete="off">
+        <div class="input-group">
+          <label for="auth-identifier">Username or Verified 10-Digit Mobile</label>
+          <div class="input-field-wrap">
+            <i class="ri-at-line field-icon"></i>
+            <input
+              type="text"
+              id="auth-identifier"
+              placeholder="@username or 9876543210"
+              maxlength="16"
+              required
+            />
+          </div>
+          <small class="input-hint">Max 16 chars • Auto-registers if new @username</small>
+        </div>
+
+        <div class="input-group">
+          <label for="auth-password">Master Password</label>
+          <div class="input-field-wrap">
+            <i class="ri-lock-password-line field-icon"></i>
+            <input
+              type="password"
+              id="auth-password"
+              placeholder="Enter password (max 16 chars)"
+              maxlength="16"
+              required
+            />
+            <button type="button" id="toggle-password-btn" class="icon-btn-sm" title="Show/Hide Password">
+              <i class="ri-eye-off-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="btn-primary-gradient">
+          <i class="ri-shield-check-line"></i> Secure Login / Auto-Register
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>OR INSTANT VERIFIED ACCESS</span></div>
+
+      <!-- Secondary 1-Click Verified Google Login -->
+      <button type="button" id="google-login-btn" class="btn-google-verified">
+        <span class="blue-dot-icon">🔵</span>
+        <span>1-Click Login with Verified Google</span>
+        <i class="ri-verified-badge-fill verified-badge"></i>
+      </button>
+
+      <!-- Footer Security Badge -->
+      <div class="auth-security-footer">
+        <span>🔒 E2EE AES-256 | Anti-Sniffing SSL Pinning Active</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       2. MAIN APP SHELL (#main-app)
+       ======================================================================== -->
+  <main id="main-app" class="app-shell hidden">
+
+    <!-- LEFT / SIDEBAR PANEL: NAVBAR, STORIES, SEARCH & INBOX LIST -->
+    <aside id="sidebar-panel" class="sidebar-panel">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="brand-left">
+          <img src="" alt="Logo" class="nav-logo dynamic-app-logo" />
+          <div class="brand-titles">
+            <div class="brand-name-row">
+              <h2 class="dynamic-app-name">NexChat Pro</h2>
+              <span id="nav-user-verified" class="verified-badge hidden" title="Official Blue Tick Verified">
+                <i class="ri-verified-badge-fill"></i>
+              </span>
+            </div>
+            <span id="nav-current-user" class="nav-user-handle">@user • #00000</span>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <button type="button" id="nav-search-btn" class="nav-icon-btn" title="Search User by @username or #ProfileID">
+            <i class="ri-search-2-line"></i>
+          </button>
+          <button type="button" id="nav-notif-btn" class="nav-icon-btn" title="Admin & Security Alerts">
+            <i class="ri-notification-3-line"></i>
+            <span id="notif-badge" class="notif-dot">2</span>
+          </button>
+          <button type="button" id="nav-settings-btn" class="nav-icon-btn" title="Settings & Customization">
+            <i class="ri-settings-4-line"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- 24-Hour Stories Bar (#stories-bar) -->
+      <section id="stories-bar" class="stories-bar">
+        <!-- Rendered dynamically by app.js (+ Add Story button + Friends' story rings) -->
+      </section>
+
+      <!-- Search Bar (#search-panel) -->
+      <section id="search-panel" class="search-panel">
+        <div class="search-box">
+          <i class="ri-search-line"></i>
+          <input
+            type="text"
+            id="user-search-input"
+            placeholder="Search @username or #ProfileID (e.g. #90421)..."
+            autocomplete="off"
+          />
+          <button type="button" id="clear-search-btn" class="icon-btn-sm hidden" title="Clear Search">
+            <i class="ri-close-circle-fill"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Inbox Chat List (#chat-list) -->
+      <section id="chat-list" class="chat-list">
+        <!-- Rendered dynamically by app.js (Pinned Broadcast + Contacts) -->
+      </section>
+    </aside>
+
+    <!-- RIGHT PANEL: EMPTY STATE PLACEHOLDER (Desktop Split View) & FULL CHAT WINDOW -->
+    <section class="chat-stage">
+
+      <!-- Empty State Placeholder when no chat is selected on Desktop -->
+      <div id="empty-chat-placeholder" class="empty-chat-state">
+        <div class="empty-state-card glass-panel">
+          <img src="" alt="App Icon" class="empty-logo dynamic-app-logo" />
+          <h3 class="dynamic-app-name">NexChat Pro</h3>
+          <p>Select any conversation or search a user by <strong>@username</strong> or <strong>#ProfileID</strong> to start messaging.</p>
+          <div class="security-pill">
+            <i class="ri-lock-2-fill"></i> End-to-End Encrypted with AES-256 &amp; SSL Pinning
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           3. FULL CHAT WINDOW (#chat-screen)
+           ==================================================================== -->
+      <div id="chat-screen" class="chat-screen wallpaper-default hidden">
+        <!-- Chat Header -->
+        <header class="chat-header">
+          <div class="chat-header-left">
+            <button type="button" id="chat-back-btn" class="nav-icon-btn mobile-back-btn" title="Back to Inbox">
+              <i class="ri-arrow-left-line"></i>
+            </button>
+            <div class="chat-avatar-wrap">
+              <img id="chat-header-avatar" src="" alt="Avatar" class="chat-header-dp" />
+              <span id="chat-header-online-dot" class="online-dot"></span>
+            </div>
+            <div class="chat-contact-meta">
+              <div class="chat-contact-name-row">
+                <h3 id="chat-header-name">Contact Name</h3>
+                <span id="chat-header-verified" class="verified-badge hidden" title="Official Blue Tick">
+                  <i class="ri-verified-badge-fill"></i>
+                </span>
+              </div>
+              <p id="chat-header-status" class="chat-status-text">Online</p>
+            </div>
+          </div>
+
+          <div class="chat-header-actions">
+            <button type="button" id="audio-call-btn" class="nav-icon-btn" title="Start E2EE Audio Call">
+              <i class="ri-phone-fill"></i>
+            </button>
+            <button type="button" id="video-call-btn" class="nav-icon-btn" title="Start E2EE HD Video Call">
+              <i class="ri-vidicon-fill"></i>
+            </button>
+            <button type="button" id="chat-menu-btn" class="nav-icon-btn" title="Chat Options & Themes">
+              <i class="ri-more-2-fill"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- E2EE Notice Banner -->
+        <div class="e2ee-banner">
+          <span>🔒 Messages are End-to-End Encrypted. No one can intercept or read this chat.</span>
+        </div>
+
+        <!-- Messages Container (#messages-area) -->
+        <div id="messages-area" class="messages-area">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Blocked Contact Notice Banner (Shown if user is blocked) -->
+        <div id="blocked-banner" class="blocked-banner hidden">
+          <span>🚫 You blocked this contact.</span>
+          <button type="button" id="unblock-banner-btn" class="btn-xs-outline">Unblock</button>
+        </div>
+
+        <!-- Reply Preview Bar (Shown above input when replying to a message) -->
+        <div id="reply-preview-bar" class="reply-preview-bar hidden">
+          <div class="reply-preview-content">
+            <span class="reply-bar-label"><i class="ri-reply-fill"></i> Replying to message</span>
+            <p id="reply-preview-text" class="reply-bar-text"></p>
+          </div>
+          <button type="button" id="cancel-reply-btn" class="icon-btn-sm" title="Cancel Reply">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Voice Recording Live Indicator Bar -->
+        <div id="voice-recording-bar" class="voice-rec-bar hidden">
+          <div class="rec-pulse-dot"></div>
+          <span class="rec-timer-text">Recording Voice Note... <strong id="voice-rec-timer">00:00</strong></span>
+          <div class="rec-actions">
+            <button type="button" id="cancel-voice-btn" class="btn-xs-danger">Cancel</button>
+            <button type="button" id="finish-voice-btn" class="btn-xs-success">Send Voice Note ➤</button>
+          </div>
+        </div>
+
+        <!-- Bottom Input Bar -->
+        <footer id="chat-input-bar" class="chat-input-bar">
+          <!-- Hidden File Input for Photos & Documents -->
+          <input type="file" id="file-attachment-input" class="hidden" accept="image/*,.pdf,.zip,.txt,.doc,.docx" />
+
+          <!-- Attach File/Photo Button (📎) -->
+          <button type="button" id="attach-file-btn" class="chat-tool-btn" title="Attach Photo or File">
+            <i class="ri-attachment-2"></i>
+          </button>
+
+          <!-- One-Seen / View-Once Toggle (1x 🔥) Button -->
+          <button type="button" id="view-once-toggle" class="chat-tool-btn view-once-btn" title="Toggle 1x View-Once Secret Mode">
+            <span class="one-x-badge">1x 🔥</span>
+          </button>
+
+          <!-- Unlimited Length Message Textarea -->
+          <div class="chat-textarea-wrap">
+            <textarea
+              id="message-input"
+              rows="1"
+              placeholder="Message (Unlimited length, E2EE)..."
+            ></textarea>
+          </div>
+
+          <!-- Voice Note Mic Button (🎤) -->
+          <button type="button" id="voice-note-btn" class="chat-tool-btn" title="Record Voice Note">
+            <i class="ri-mic-fill"></i>
+          </button>
+
+          <!-- Send Message Button (➤) -->
+          <button type="button" id="send-msg-btn" class="chat-send-btn" title="Send Encrypted Message">
+            <i class="ri-send-plane-2-fill"></i>
+          </button>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       4. ALL INTERACTIVE MODALS & OVERLAYS
+       ======================================================================== -->
+
+  <!-- MODAL A: MESSAGE CONTEXT MENU MODAL (Reactions, Reply, Copy, Forward, Share, Delete) -->
+  <div id="msg-context-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-sm glass-panel">
+      <div class="modal-header">
+        <h4>Message Actions</h4>
+        <button type="button" class="modal-close-btn" data-close="msg-context-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Quick Emoji Reaction Picker -->
+      <div class="reaction-picker-bar">
+        <button type="button" class="react-emoji-btn" data-emoji="❤️">❤️</button>
+        <button type="button" class="react-emoji-btn" data-emoji="😂">😂</button>
+        <button type="button" class="react-emoji-btn" data-emoji="👍">👍</button>
+        <button type="button" class="react-emoji-btn" data-emoji="🔥">🔥</button>
+        <button type="button" class="react-emoji-btn" data-emoji="👏">👏</button>
+      </div>
+
+      <div class="context-menu-list">
+        <button type="button" id="ctx-reply-btn" class="context-menu-item">
+          <i class="ri-reply-line"></i> Reply to Message
+        </button>
+        <button type="button" id="ctx-copy-btn" class="context-menu-item">
+          <i class="ri-file-copy-line"></i> Copy Text
+        </button>
+        <button type="button" id="ctx-forward-btn" class="context-menu-item">
+          <i class="ri-share-forward-line"></i> Forward to Contact
+        </button>
+        <button type="button" id="ctx-share-btn" class="context-menu-item">
+          <i class="ri-share-box-line"></i> Share Externally
+        </button>
+        <button type="button" id="ctx-delete-btn" class="context-menu-item danger-item">
+          <i class="ri-delete-bin-6-line"></i> Delete for Everyone
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL B: FORWARD MESSAGE CONTACT PICKER MODAL -->
+  <div id="forward-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-sm glass-panel">
+      <div class="modal-header">
+        <h4><i class="ri-share-forward-fill"></i> Forward Message To...</h4>
+        <button type="button" class="modal-close-btn" data-close="forward-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div id="forward-contacts-list" class="forward-contacts-list">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL C: VIEW-ONCE (1x 🔥) SECRET MESSAGE VIEWER MODAL -->
+  <div id="view-once-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-sm glass-panel secret-viewer-card">
+      <div class="secret-header">
+        <span class="secret-fire-badge">1x 🔥 VIEW-ONCE SECRET</span>
+        <p>This message will permanently self-destruct the moment you close this window.</p>
+      </div>
+      <div id="view-once-content-box" class="secret-payload-box">
+        <!-- Decrypted 1x text or image injected here -->
+      </div>
+      <button type="button" id="close-view-once-btn" class="btn-danger-full">
+        <i class="ri-fire-fill"></i> Close &amp; Burn Message Forever
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL D: 3-DOT CHAT MENU MODAL (Block, Clear, 5 Wallpapers + Custom Upload, 4 Bubble Themes) -->
+  <div id="chat-menu-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h4><i class="ri-palette-line"></i> Chat Customization &amp; Security</h4>
+        <button type="button" class="modal-close-btn" data-close="chat-menu-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Bubble Color Theme Picker -->
+        <div class="setting-section">
+          <label class="section-title">Chat Bubble Color Theme</label>
+          <div class="theme-grid">
+            <button type="button" class="bubble-theme-btn" data-theme="theme-instagram">
+              <span class="theme-swatch swatch-instagram"></span>
+              <span>Instagram Gradient</span>
+            </button>
+            <button type="button" class="bubble-theme-btn" data-theme="theme-whatsapp">
+              <span class="theme-swatch swatch-whatsapp"></span>
+              <span>WhatsApp Green</span>
+            </button>
+            <button type="button" class="bubble-theme-btn" data-theme="theme-telegram">
+              <span class="theme-swatch swatch-telegram"></span>
+              <span>Telegram Blue</span>
+            </button>
+            <button type="button" class="bubble-theme-btn" data-theme="theme-cyberpink">
+              <span class="theme-swatch swatch-cyberpink"></span>
+              <span>Cyber Pink</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Wallpaper Picker (5 Presets + Custom Image Upload) -->
+        <div class="setting-section">
+          <label class="section-title">Chat Wallpaper (5 Presets + Custom Upload)</label>
+          <div class="wallpaper-grid">
+            <button type="button" class="wallpaper-btn" data-wallpaper="wallpaper-default">Default Dark</button>
+            <button type="button" class="wallpaper-btn" data-wallpaper="wallpaper-midnight">Midnight Nebula</button>
+            <button type="button" class="wallpaper-btn" data-wallpaper="wallpaper-emerald">Emerald Matrix</button>
+            <button type="button" class="wallpaper-btn" data-wallpaper="wallpaper-sunset">Cyber Sunset</button>
+            <button type="button" class="wallpaper-btn" data-wallpaper="wallpaper-royal">Royal Velvet</button>
+          </div>
+          <div class="custom-wallpaper-upload">
+            <input type="file" id="custom-wallpaper-input" class="hidden" accept="image/*" />
+            <button type="button" id="upload-wallpaper-btn" class="btn-secondary-full">
+              <i class="ri-image-add-line"></i> Upload Custom Wallpaper Image
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Privacy Actions -->
+        <div class="setting-section chat-danger-zone">
+          <button type="button" id="clear-chat-btn" class="btn-outline-warning">
+            <i class="ri-eraser-line"></i> Clear Chat History
+          </button>
+          <button type="button" id="block-user-btn" class="btn-outline-danger">
+            <i class="ri-forbid-2-line"></i> <span id="block-user-btn-text">Block User</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL E: STORY VIEWER & STORY CREATOR MODALS -->
+  <!-- Full-Screen Story Viewer -->
+  <div id="story-viewer-modal" class="modal-backdrop hidden">
+    <div class="story-viewer-container">
+      <div class="story-progress-track">
+        <div id="story-progress-bar" class="story-progress-fill"></div>
+      </div>
+
+      <div class="story-viewer-header">
+        <div class="story-user-info">
+          <img id="story-view-avatar" src="" alt="DP" class="story-header-dp" />
+          <div>
+            <div class="story-name-row">
+              <h4 id="story-view-name">User</h4>
+              <span id="story-view-verified" class="verified-badge hidden">
+                <i class="ri-verified-badge-fill"></i>
+              </span>
+            </div>
+            <span id="story-view-time" class="story-time-label">Just now</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" data-close="story-viewer-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div id="story-stage-content" class="story-stage-content">
+        <!-- Story Text or Image rendered here -->
+      </div>
+
+      <div class="story-viewer-footer">
+        <div class="seen-by-pill">
+          <i class="ri-eye-line"></i> Seen by: <span id="story-seen-by-list">0 users</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Creator Modal (+ Add 24h Story) -->
+  <div id="story-creator-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-sm glass-panel">
+      <div class="modal-header">
+        <h4><i class="ri-sparkling-2-line"></i> Post 24-Hour Story</h4>
+        <button type="button" class="modal-close-btn" data-close="story-creator-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="story-text-input">Story Text / Status Caption</label>
+          <textarea
+            id="story-text-input"
+            rows="3"
+            placeholder="Share what's on your mind..."
+          ></textarea>
+        </div>
+        <div class="input-group">
+          <label>Or Attach Story Photo (Optional)</label>
+          <input type="file" id="story-image-input" accept="image/*" class="file-input-clean" />
+        </div>
+        <button type="button" id="publish-story-btn" class="btn-primary-gradient">
+          <i class="ri-send-plane-fill"></i> Publish Story to Ring
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL F: AUDIO / VIDEO CALL OVERLAY (#call-overlay) -->
+  <div id="call-overlay" class="call-overlay hidden">
+    <div class="call-card glass-panel">
+      <div class="call-security-tag">
+        <i class="ri-lock-fill"></i> E2EE SRTP Encrypted Channel
+      </div>
+
+      <div class="call-avatar-pulse-wrap">
+        <img id="call-contact-avatar" src="" alt="Caller" class="call-avatar" />
+      </div>
+
+      <h3 id="call-contact-name">Contact Name</h3>
+      <p id="call-type-label" class="call-status-sub">Outgoing E2EE Call...</p>
+      <div id="call-timer-display" class="call-timer">00:00</div>
+
+      <!-- Simulated Video Preview Box when camera/screen share is toggled -->
+      <div id="call-video-preview" class="call-video-stage hidden">
+        <div class="video-placeholder-label">
+          <i class="ri-live-line"></i> <span id="video-stage-text">HD Encrypted Stream Active</span>
+        </div>
+      </div>
+
+      <div class="call-controls-row">
+        <button type="button" id="call-mute-btn" class="call-ctrl-btn" title="Mute / Unmute Mic">
+          <i class="ri-mic-fill"></i>
+        </button>
+        <button type="button" id="call-camera-btn" class="call-ctrl-btn" title="Camera On / Off">
+          <i class="ri-vidicon-fill"></i>
+        </button>
+        <button type="button" id="call-screen-btn" class="call-ctrl-btn" title="Share Screen">
+          <i class="ri-Cast-line"></i>
+        </button>
+        <button type="button" id="call-end-btn" class="call-ctrl-btn end-call-btn" title="End Call">
+          <i class="ri-phone-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL G: NOTIFICATIONS / ADMIN ALERTS MODAL -->
+  <div id="notifications-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-sm glass-panel">
+      <div class="modal-header">
+        <h4><i class="ri-notification-badge-line"></i> System &amp; Admin Alerts</h4>
+        <button type="button" class="modal-close-btn" data-close="notifications-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div id="notifications-list" class="notifications-list">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL H: SETTINGS & CUSTOMIZATION MODAL (#settings-modal)
+       4 Dedicated Tabs: Profile, Blue Tick, Disguise Mode, Linked Devices
+       ======================================================================== -->
+  <div id="settings-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-lg glass-panel">
+      <div class="modal-header">
+        <h4><i class="ri-settings-5-fill"></i> Settings, Blue Tick &amp; Disguise Center</h4>
+        <button type="button" class="modal-close-btn" data-close="settings-modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- 4 Navigation Tabs -->
+      <div class="settings-tabs-nav">
+        <button type="button" class="settings-tab-btn active" data-tab="tab-profile">
+          <i class="ri-user-star-line"></i> 1. Profile &amp; Fonts
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="tab-bluetick">
+          <i class="ri-verified-badge-line"></i> 2. Blue Tick
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="tab-disguise">
+          <i class="ri-spy-line"></i> 3. App Disguise
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="tab-devices">
+          <i class="ri-macbook-line"></i> 4. Linked Devices
+        </button>
+      </div>
+
+      <div class="modal-body settings-tab-containers">
+
+        <!-- TAB 1: PROFILE & STYLISH UNICODE FONT NAME PICKER -->
+        <div id="tab-profile" class="settings-tab-pane active">
+          <div class="profile-editor-header">
+            <div class="profile-dp-wrap">
+              <img id="settings-profile-dp" src="" alt="Your DP" class="settings-dp-img" />
+              <input type="file" id="profile-dp-input" class="hidden" accept="image/*" />
+              <button type="button" id="change-dp-btn" class="dp-edit-badge" title="Upload New DP">
+                <i class="ri-camera-switch-line"></i>
+              </button>
+            </div>
+            <div class="profile-ids-box">
+              <div class="id-chip">
+                <span>Username:</span>
+                <strong id="settings-username-display">@user</strong>
+                <button type="button" id="copy-username-btn" class="icon-btn-xs" title="Copy @username">
+                  <i class="ri-file-copy-line"></i>
+                </button>
+              </div>
+              <div class="id-chip">
+                <span>Unique ID:</span>
+                <strong id="settings-profileid-display">#00000</strong>
+                <button type="button" id="copy-profileid-btn" class="icon-btn-xs" title="Copy #ProfileID">
+                  <i class="ri-file-copy-line"></i>
+                </button>
+              </div>
+              <div id="settings-verified-pill" class="status-pill unverified">
+                Unverified Account
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="stylish-name-input">Type Your Display Name (Live Font Converter Below)</label>
+            <input
+              type="text"
+              id="stylish-name-input"
+              placeholder="Enter your display name..."
+              maxlength="28"
+            />
+          </div>
+
+          <div class="setting-section">
+            <label class="section-title">Select Live Stylish Unicode Font (5 Styles)</label>
+            <div id="font-styles-list" class="font-styles-list">
+              <!-- 5 live selectable font cards rendered by app.js as you type -->
+            </div>
+          </div>
+
+          <button type="button" id="save-profile-btn" class="btn-primary-gradient">
+            <i class="ri-save-3-line"></i> Save Profile &amp; Stylish Name
+          </button>
+        </div>
+
+        <!-- TAB 2: OFFICIAL BLUE TICK VERIFICATION (STRICTLY 2 METHODS) -->
+        <div id="tab-bluetick" class="settings-tab-pane hidden">
+          <div class="verification-intro">
+            <i class="ri-verified-badge-fill big-blue-tick"></i>
+            <div>
+              <h4>Official Blue Tick Verification</h4>
+              <p>Verified accounts receive an Official Blue Tick badge across chats &amp; stories and unlock 1-Click Login.</p>
+            </div>
+          </div>
+
+          <!-- METHOD A: 1-Click Verify with Google (@gmail.com strictly) -->
+          <div class="verify-method-card">
+            <div class="method-badge">METHOD A • INSTANT GOOGLE VERIFICATION</div>
+            <h5>1-Click Verify with Official Google (<code>@gmail.com</code> Only)</h5>
+            <p class="method-desc">
+              Strictly blocks temp-mail, custom domains, and <code>+</code> alias tricks (e.g. <code>name+1@gmail.com</code> is blocked).
+            </p>
+            <div class="input-field-wrap">
+              <i class="ri-google-fill field-icon"></i>
+              <input
+                type="email"
+                id="google-verify-email"
+                placeholder="yourname@gmail.com (No + aliases)"
+              />
+            </div>
+            <button type="button" id="verify-google-btn" class="btn-google-verified">
+              <span>🔵 1-Click Verify with Google (@gmail.com)</span>
+            </button>
+          </div>
+
+          <!-- METHOD B: Verify 10-Digit Mobile Number (Reverse Code + Demo Admin Approval) -->
+          <div class="verify-method-card">
+            <div class="method-badge">METHOD B • 10-DIGIT MOBILE REVERSE VERIFICATION</div>
+            <h5>Verify 10-Digit Mobile Number</h5>
+            <p class="method-desc">
+              Generate a unique Reverse Verification Code and send it from your mobile number to Admin. Once approved, you get the Blue Tick and can login with your Mobile Number!
+            </p>
+            <div class="input-field-wrap">
+              <i class="ri-smartphone-line field-icon"></i>
+              <input
+                type="tel"
+                id="mobile-verify-input"
+                placeholder="Enter 10-digit mobile number (e.g. 9876543210)"
+                maxlength="10"
+              />
+            </div>
+            <button type="button" id="generate-mobile-code-btn" class="btn-secondary-full">
+              <i class="ri-qr-code-line"></i> Generate Reverse Verification Code
+            </button>
+
+            <!-- Reverse Code Box (Appears after generating code) -->
+            <div id="mobile-reverse-code-box" class="reverse-code-box hidden">
+              <div class="code-display-row">
+                <span>Your Reverse Code:</span>
+                <strong id="generated-verify-code">VERIFY-849201</strong>
+              </div>
+              <button type="button" id="send-code-admin-btn" class="btn-whatsapp-send">
+                📲 Send Code from this Number via WhatsApp/SMS to Admin
+              </button>
+              <button type="button" id="simulate-admin-approve-btn" class="btn-demo-approve">
+                ⚡ [Demo Mode] Simulate Admin Approval (Instant Blue Tick)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: APP LOGO & APP NAME CHANGER (DISGUISE MODE) -->
+        <div id="tab-disguise" class="settings-tab-pane hidden">
+          <div class="setting-section">
+            <label class="section-title">Quick Stealth Disguise Presets</label>
+            <p class="method-desc">Instantly disguise the App Name, Header Logo, and Browser Tab Favicon.</p>
+            <div class="disguise-presets-grid">
+              <button type="button" class="disguise-preset-card" data-preset="default">
+                <span class="preset-emoji">💬</span>
+                <strong>Default App</strong>
+                <small>NexChat Pro</small>
+              </button>
+              <button type="button" class="disguise-preset-card" data-preset="calculator">
+                <span class="preset-emoji">🧮</span>
+                <strong>Calculator</strong>
+                <small>Smart Calculator</small>
+              </button>
+              <button type="button" class="disguise-preset-card" data-preset="notes">
+                <span class="preset-emoji">📝</span>
+                <strong>Notes App</strong>
+                <small>Quick Notes</small>
+              </button>
+              <button type="button" class="disguise-preset-card" data-preset="weather">
+                <span class="preset-emoji">⛅</span>
+                <strong>Weather</strong>
+                <small>AccuWeather Live</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <label class="section-title">Custom App Name &amp; Custom Icon Upload</label>
+            <div class="input-group">
+              <label for="custom-app-name-input">Custom App Name</label>
+              <input
+                type="text"
+                id="custom-app-name-input"
+                placeholder="e.g. My Study Portal"
+                maxlength="24"
+              />
+            </div>
+            <div class="input-group">
+              <label for="custom-app-icon-url">Custom Logo URL (or Upload Icon File below)</label>
+              <input
+                type="url"
+                id="custom-app-icon-url"
+                placeholder="https://example.com/icon.png"
+              />
+            </div>
+            <div class="input-group">
+              <input type="file" id="custom-app-icon-file" accept="image/*" class="file-input-clean" />
+            </div>
+            <button type="button" id="apply-custom-disguise-btn" class="btn-primary-gradient">
+              <i class="ri-magic-line"></i> Apply Custom App Name &amp; Logo
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 4: LINKED DEVICES & MULTI-DEVICE CODE GENERATOR -->
+        <div id="tab-devices" class="settings-tab-pane hidden">
+          <div class="setting-section">
+            <label class="section-title">Link a New Device via 6-Digit Encrypted Code</label>
+            <div class="link-device-box">
+              <div id="device-link-code-display" class="six-digit-code">--- ---</div>
+              <button type="button" id="generate-device-code-btn" class="btn-secondary-full">
+                <i class="ri-key-2-line"></i> Generate 6-Digit Link Device Code
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <label class="section-title">Active Logged-In Sessions</label>
+            <div id="linked-devices-list" class="linked-devices-list">
+              <!-- Populated dynamically by app.js -->
+            </div>
+            <button type="button" id="logout-other-devices-btn" class="btn-outline-warning">
+              <i class="ri-shield-Delete-line"></i> Logout All Other Devices
+            </button>
+          </div>
+
+          <div class="setting-section">
+            <button type="button" id="logout-current-session-btn" class="btn-danger-full">
+              <i class="ri-logout-box-r-line"></i> Logout Current Account
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- SCRIPTS: Load config.js first, then app.js -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
